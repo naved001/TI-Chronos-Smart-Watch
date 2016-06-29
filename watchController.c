@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 	// open port for watch RF Communication
 	struct termios  config;
 	int wFile;
-	wFile = open(DEVICEPORT, O_RDWR | O_NOCTTY | O_NDELAY);
+	wFile = open(DEVICEPORT, O_RDWR | O_NOCTTY | O_NDELAY); //open port (NON BLOCKING)
 	if(wFile == -1)
 	{
 		printf( "failed to open port\n" );
@@ -61,20 +61,20 @@ int main(int argc, char **argv)
 
 	// open car device driver file
 	FILE * cFile;
-	cFile = fopen("/dev/mycar", "r+");
+	cFile = fopen("/dev/mycar", "r+"); 
 	if (cFile==NULL) {
 		fputs("mycar module isn't loaded\n",stderr);
 		return -1;
 	}
 
 	bzero(&config, sizeof(config));
-	config.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
+	config.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD; //set baud rate, no. of bits = 8
 	config.c_oflag = 0;
 	tcflush(wFile, TCIFLUSH);
 	tcsetattr(wFile,TCSANOW,&config);
 
 	//start sequence: 0xFF 0x07 0x03;
-	write(wFile,start,sizeof(start));
+	write(wFile,start,sizeof(start)); //send start sequence to device. 
 	printf("press start button on watch now!!!!\n");	
 	sleep(1);
 	printf("hope you already pressed button!\n");
@@ -84,7 +84,7 @@ int main(int argc, char **argv)
 	while(1)
 	{
 		fclose(cFile);
-		usleep(50000);
+		usleep(50000); //sleep between every subsequent requests. 
 		strcpy(response,"");
 
 		//data request sequence: 0xFF 0x08 0x07 0x00 0x00 0x00 0x00;
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		y = response[5];
 		z = response[6];
 
-		if ((x + y + z) ==0)
+		if ((x + y + z) ==0) //ignore zeros
 		{
 			zeroCounter++;
 		}
@@ -113,6 +113,7 @@ int main(int argc, char **argv)
 		
 		cFlag = 0;
 		///////////////////////////////////////
+		//set direction based on data. 
 		if (filter_x>15) //right
 		{
 			if (filter_x>30)
@@ -180,7 +181,7 @@ int main(int argc, char **argv)
 			//break;
 		}
 		else
-			fputs(command, cFile);
+			fputs(command, cFile); //put the command in the car controller device file. 
 	}
 
 	//fputs("s", cFile);
