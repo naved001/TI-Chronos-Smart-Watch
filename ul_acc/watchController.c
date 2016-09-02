@@ -16,7 +16,7 @@
 #define DEVICEPORT "/dev/ttyACM0"
 
 /******************************************************
-  Prepared by Avi Klausner
+  Prepared by Avi Klausner, Naved Ansari, Adarsh Mammen
   
   Usage:
     ./Controller
